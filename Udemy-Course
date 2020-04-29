@@ -52,9 +52,48 @@ Each base quality, Q, is an ASCII-encoded version of Q=-10log10p
 The character I (capital i) has ASCII value 73.  Assuming Phred+33 encoding, what is the corresponding base quality?
 40
 
+def readFastq(filename):
+    sequences = []
+    qualities = []
+    with open(filename, 'r') as file:
+        while True:
+            file.readline()
+            seq = file.readline().rstrip()
+            file.readline()
+            qual = file.readline().rstrip()
+            if len(seq) == 0:
+                break
+            sequences.append(seq)
+            qualities.append(qual)
+    return sequences, qualities
+    
+seqs, quals = readFastq('.fastq')        
+          
 def QtoPhred33(Q):
     return char(Q + 33)
     
 def phred33ToQ(qual):
     return ord(qual - 33)
+
+GC content
+You might see varying GC content along the genome if sequencing reads have more errors.
+
+def findGCByPos(reads):
+    gc = [0] * 100
+    totals = [0] * 100
+    
+    for read in reads:
+        for i in range(len(read)):
+            if read[i] == 'C' or read[i] == 'G':
+                gc[i] += 1
+            totals[i] += 1
+    for i in range(len(gc)):
+        if totals[i] > 0:
+            gc[i] /= float(totals[i])
+    return gc
+
+gc = findGCByPos(seqs)
+plt.plot(range(len(gc)),c)
+
+'N' is when the base caller have NO confidence and does not want to make any call there.
 
