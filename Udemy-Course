@@ -6,3 +6,55 @@ Takes long genome and sequences fragments randomly thoughout the gene.
 150 - couple hundred nucleotides long.
 
 Substring Definitions: Prefix, Suffix,
+
+Opening fasta files.
+
+def faFile(filename):
+    genome = ''
+    with open(filename, "r") as file"
+        for line in file:
+            if not line[0] == '>':
+                genome += line.rstrip()
+    return genome
+    
+    
+FastQ Format.
+1.Name, 2. Sequence, 3. Placeholder (ignore), 4. Base Qualities
+    
+Base Quality.
+Q = -10log(p)
+    
+Phred33:
+Round Q off to nearest integer, add 33 to it, and then convert it to corresponding character.
+
+
+
+Sequencing Errors and Base Qualities.
+Unterminated base allows another base to be incorporated on top of the base. This makes
+one of the template strands out of sync. This continues to occur with more strands as the
+sequencing cycle continues.
+
+One software analyzses these images and tries to deal with this ambiguity - called a Base Caller.
+If the base caller is not confident, we need to know this - which bases may not be true.
+Base Quality is the Base Callers estimate that the base was called incorrectly.
+Q = -10 * log10(p), where Q is the base quality and p is the probability that base call is incorrect.
+Q = 10 -> 1 in 10 chance call is incorrect
+Q = 20 -> 1 in 100
+Q = 30 -> 1 in 1,000.
+
+Call: Orange(C)
+Estimate p, probability incorrect:
+    non-orange light / total light
+p = 3 green / 9 total = 1/3
+Q = -10 * log10(1/3)
+Each base quality, Q, is an ASCII-encoded version of Q=-10log10p
+
+The character I (capital i) has ASCII value 73.  Assuming Phred+33 encoding, what is the corresponding base quality?
+40
+
+def QtoPhred33(Q):
+    return char(Q + 33)
+    
+def phred33ToQ(qual):
+    return ord(qual - 33)
+
